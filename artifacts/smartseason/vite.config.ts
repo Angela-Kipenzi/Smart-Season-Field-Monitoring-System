@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
 
   const basePath = env.BASE_PATH ?? "/";
   const webPort = Number(env.WEB_PORT ?? 5173);
-  const apiPort = Number(env.API_PORT ?? env.PORT ?? 8080);
+  const apiPort = Number(env.API_PORT ?? env.PORT ?? 8081);
 
   return {
     envDir: workspaceRoot,
