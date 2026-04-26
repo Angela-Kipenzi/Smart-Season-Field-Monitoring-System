@@ -1,0 +1,421 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: SmartSeason Field Monitoring System API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: auth
+  - name: users
+  - name: fields
+  - name: updates
+  - name: dashboard
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user (with role)
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentUser"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin only)
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppUser"
+  /users/agents:
+    get:
+      operationId: listFieldAgents
+      tags: [users]
+      summary: List field agents (admin only)
+      responses:
+        "200":
+          description: Field agents list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppUser"
+  /users/{id}/role:
+    patch:
+      operationId: updateUserRole
+      tags: [users]
+      summary: Update a user's role (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [admin, field_agent]
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppUser"
+
+  /fields:
+    get:
+      operationId: listFields
+      tags: [fields]
+      summary: List fields (admin sees all, agent sees assigned)
+      responses:
+        "200":
+          description: Fields list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Field"
+    post:
+      operationId: createField
+      tags: [fields]
+      summary: Create a field (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFieldBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+  /fields/{id}:
+    get:
+      operationId: getField
+      tags: [fields]
+      summary: Get a field by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Field
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+    patch:
+      operationId: updateField
+      tags: [fields]
+      summary: Update a field (admin can edit all; agent can update stage)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFieldBody"
+      responses:
+        "200":
+          description: Updated field
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+    delete:
+      operationId: deleteField
+      tags: [fields]
+      summary: Delete a field (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  /fields/{id}/updates:
+    get:
+      operationId: listFieldUpdates
+      tags: [updates]
+      summary: List updates for a field
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updates list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FieldUpdate"
+    post:
+      operationId: createFieldUpdate
+      tags: [updates]
+      summary: Add an update/note for a field (assigned agent or admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFieldUpdateBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldUpdate"
+
+  /updates/recent:
+    get:
+      operationId: listRecentUpdates
+      tags: [updates]
+      summary: Recent updates across visible fields
+      responses:
+        "200":
+          description: Recent updates with field context
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FieldUpdateWithField"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Aggregate summary for current user (scoped by role)
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+      required: [status]
+
+    Role:
+      type: string
+      enum: [admin, field_agent]
+
+    Stage:
+      type: string
+      enum: [planted, growing, ready, harvested]
+
+    FieldStatus:
+      type: string
+      enum: [active, at_risk, completed]
+
+    AppUser:
+      type: object
+      required: [id, clerkId, email, name, role, createdAt]
+      properties:
+        id: { type: integer }
+        clerkId: { type: string }
+        email: { type: string }
+        name: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        createdAt: { type: string, format: date-time }
+
+    CurrentUser:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: "#/components/schemas/AppUser"
+
+    Field:
+      type: object
+      required:
+        - id
+        - name
+        - cropType
+        - plantingDate
+        - stage
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        cropType: { type: string }
+        location: { type: ["string", "null"] }
+        areaHectares: { type: ["number", "null"] }
+        plantingDate: { type: string, format: date }
+        expectedHarvestDate: { type: ["string", "null"], format: date }
+        stage: { $ref: "#/components/schemas/Stage" }
+        status: { $ref: "#/components/schemas/FieldStatus" }
+        assignedAgentId: { type: ["integer", "null"] }
+        assignedAgentName: { type: ["string", "null"] }
+        lastUpdateAt: { type: ["string", "null"], format: date-time }
+        notes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CreateFieldBody:
+      type: object
+      required: [name, cropType, plantingDate]
+      properties:
+        name: { type: string }
+        cropType: { type: string }
+        location: { type: ["string", "null"] }
+        areaHectares: { type: ["number", "null"] }
+        plantingDate: { type: string, format: date }
+        expectedHarvestDate: { type: ["string", "null"], format: date }
+        stage: { $ref: "#/components/schemas/Stage" }
+        assignedAgentId: { type: ["integer", "null"] }
+        notes: { type: ["string", "null"] }
+
+    UpdateFieldBody:
+      type: object
+      properties:
+        name: { type: string }
+        cropType: { type: string }
+        location: { type: ["string", "null"] }
+        areaHectares: { type: ["number", "null"] }
+        plantingDate: { type: string, format: date }
+        expectedHarvestDate: { type: ["string", "null"], format: date }
+        stage: { $ref: "#/components/schemas/Stage" }
+        assignedAgentId: { type: ["integer", "null"] }
+        notes: { type: ["string", "null"] }
+
+    FieldUpdate:
+      type: object
+      required: [id, fieldId, authorId, authorName, note, createdAt]
+      properties:
+        id: { type: integer }
+        fieldId: { type: integer }
+        authorId: { type: integer }
+        authorName: { type: string }
+        previousStage: { type: ["string", "null"] }
+        newStage: { type: ["string", "null"] }
+        note: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    FieldUpdateWithField:
+      type: object
+      required: [id, fieldId, fieldName, authorId, authorName, note, createdAt]
+      properties:
+        id: { type: integer }
+        fieldId: { type: integer }
+        fieldName: { type: string }
+        authorId: { type: integer }
+        authorName: { type: string }
+        previousStage: { type: ["string", "null"] }
+        newStage: { type: ["string", "null"] }
+        note: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    CreateFieldUpdateBody:
+      type: object
+      required: [note]
+      properties:
+        note: { type: string }
+        newStage:
+          oneOf:
+            - $ref: "#/components/schemas/Stage"
+            - type: "null"
+
+    StageCount:
+      type: object
+      required: [stage, count]
+      properties:
+        stage: { $ref: "#/components/schemas/Stage" }
+        count: { type: integer }
+
+    StatusCount:
+      type: object
+      required: [status, count]
+      properties:
+        status: { $ref: "#/components/schemas/FieldStatus" }
+        count: { type: integer }
+
+    DashboardSummary:
+      type: object
+      required:
+        - totalFields
+        - activeCount
+        - atRiskCount
+        - completedCount
+        - stageBreakdown
+        - statusBreakdown
+        - recentUpdates
+      properties:
+        totalFields: { type: integer }
+        activeCount: { type: integer }
+        atRiskCount: { type: integer }
+        completedCount: { type: integer }
+        totalAgents: { type: ["integer", "null"] }
+        stageBreakdown:
+          type: array
+          items: { $ref: "#/components/schemas/StageCount" }
+        statusBreakdown:
+          type: array
+          items: { $ref: "#/components/schemas/StatusCount" }
+        recentUpdates:
+          type: array
+          items: { $ref: "#/components/schemas/FieldUpdateWithField" }

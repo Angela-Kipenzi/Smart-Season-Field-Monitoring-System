@@ -1,0 +1,26 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "QbZoelZK-Fy5y1_uzUX57"
+uri = "file://attached_assets/stock_images/smartseason_hero_farm_aerial_1.jpg"
+type = "image"
+title = "drone aerial view of green farmland with crop rows at golden hour, agricultural fields"
+
+[[outputs]]
+id = "Fz8Uy1GSwfBXMNJSI7hq0"
+uri = "file://attached_assets/stock_images/smartseason_hero_farm_aerial_2.jpg"
+type = "image"
+title = "drone aerial view of green farmland with crop rows at golden hour, agricultural fields"
+
+[[outputs]]
+id = "bsmnBE2Ana1Z71_m5iPlw"
+uri = "file://attached_assets/stock_images/smartseason_hero_farm_aerial_3.jpg"
+type = "image"
+title = "drone aerial view of green farmland with crop rows at golden hour, agricultural fields"
+
+[[outputs]]
+id = "4-ThjzAJ2tv2eE-87h4NW"
+uri = "file://attached_assets/stock_images/smartseason_hero_farm_aerial_4.jpg"
+type = "image"
+title = "drone aerial view of green farmland with crop rows at golden hour, agricultural fields"
