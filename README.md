@@ -107,11 +107,3 @@ lib/
 
 ---
 
-## Design decisions & tradeoffs
-
-- **OpenAPI-first** — picking a single spec and generating both the typed client and the request/response schemas eliminates the most common class of bugs in a small assessment: drift between front and back. Adding an endpoint is `edit yaml → run codegen → use the new hook`.
-- **Status is derived, not stored** — storing computed status would mean having to keep it consistent on every write and every cron tick. Computing on read is cheap at this scale and is impossible to get out of sync with the underlying data.
-- **First-user-is-admin bootstrap** — the assessment requires demoing both roles without an external admin console. This rule is intentional, simple, and documented; in production you would seed a known admin account or grant the role out-of-band.
-- **Updates are append-only** — each update is a row, and changing the stage is just an update with a `newStage`. This gives a simple, auditable timeline per field and avoids the need for a separate "history" table.
-- **Single source of authorization** — `requireAuth` always loads the local user, so every downstream handler can trust `req.currentUser` for both identity and role checks. Field-level checks (assigned agent vs admin) live with the handler that needs them.
-- **Clerk for auth** — gives us hosted password/OAuth and session management without writing a credential store, which is the right tradeoff for a 4-day assessment.
