@@ -42,7 +42,6 @@ Field **status** is derived on the server, not stored, so it always reflects the
 - **at_risk** — no update in 14+ days, *or* the field has been in the `planted` stage for more than 7 days (i.e. activity has stalled).
 - **active** — anything else.
 
-This rule is intentionally simple and explainable; it is computed per-field both for list views and for the aggregate dashboard counters.
 
 ### Dashboards
 
@@ -84,7 +83,6 @@ Requirements: Node 20+, pnpm 10+, a PostgreSQL database, a Clerk application.
    pnpm --filter @workspace/smartseason run dev  # Web on the assigned port
    ```
 
-5. **Sign up** — open the app, click *Get Started*, and create your first account. Because you are the first user, you are automatically made an **admin**. Create a few fields, then sign up a second account in another browser — that one will be a **field_agent**, and you can assign fields to them from the admin UI.
 
 ### Demo credentials
 
@@ -104,6 +102,4 @@ lib/
   api-client-react/    generated React Query hooks
   db/                  Drizzle schema + db client
 ```
-
----
 
