@@ -2,18 +2,27 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm run build",
   "framework": null,
-  "experimentalServices": [
+  "builds": [
     {
-      "name": "web",
-      "entrypoint": "artifacts/smartseason",
-      "routePrefix": "/",
-      "framework": "vite"
+      "src": "artifacts/smartseason/**",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
     },
     {
-      "name": "api",
-      "entrypoint": "artifacts/api-server",
-      "routePrefix": "api",
-      "framework": "express"
+      "src": "artifacts/api-server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "artifacts/api-server/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "artifacts/smartseason/index.html"
     }
   ]
 }
