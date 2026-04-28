@@ -1,0 +1,19 @@
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run build",
+  "framework": null,
+  "experimentalServices": [
+    {
+      "name": "web",
+      "entrypoint": "artifacts/smartseason",
+      "routePrefix": "/",
+      "framework": "vite"
+    },
+    {
+      "name": "api",
+      "entrypoint": "artifacts/api-server",
+      "routePrefix": "api",
+      "framework": "express"
+    }
+  ]
+}
