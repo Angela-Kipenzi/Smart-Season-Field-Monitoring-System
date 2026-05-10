@@ -1,0 +1,7 @@
+Loaded Prisma config from prisma.config.ts.
+System.Management.Automation.RemoteException
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "postgres", schema "public" at "db.jotxfmwmorkeqvhiqery.supabase.co:5432"
+
+Error: Schema engine error:
+System.Management.Automation.RemoteException

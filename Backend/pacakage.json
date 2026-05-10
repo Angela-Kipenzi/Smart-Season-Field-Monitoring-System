@@ -1,0 +1,33 @@
+{
+  "name": "smartseason-backend",
+  "version": "1.0.0",
+  "description": "SmartSeason Field Monitoring System Backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "@prisma/client": "^5.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.20",
+    "@types/cors": "^2.8.14",
+    "@types/jsonwebtoken": "^9.0.4",
+    "@types/bcryptjs": "^2.4.5",
+    "@types/node": "^20.8.9",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2",
+    "prisma": "^5.6.0",
+    "ts-node": "^10.9.1"
+  }
+}
