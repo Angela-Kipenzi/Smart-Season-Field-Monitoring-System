@@ -6,8 +6,9 @@ export default defineConfig({
   migrations: {
     path: "prisma/migrations",
   },
-  
+
   datasource: {
-    url: env("DATABASE_URL"),
+    // Prefer a direct connection (e.g. Supabase non-pooler / port 5432) for migrations.
+    url: process.env.DIRECT_URL ?? env("DATABASE_URL"),
   },
 });
